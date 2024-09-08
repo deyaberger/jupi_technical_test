@@ -7,7 +7,7 @@ const suggestions = ref([])
 const loading = ref(false)
 
 const fetchSuggestions = async () => {
-  if (query.value.length > 0) {
+  if (query.value.length >= 3) {
     loading.value = true
     try {
       const response = await fetch(`http://localhost:8000/suggestions/?query=${query.value}`)
@@ -38,8 +38,8 @@ const goToSuggestionPage = (suggestion) => {
     </h3>
     <div>
       <div class="search-container">
-      <input v-model="query" @input="fetchSuggestions" placeholder="Search..."/>
-      <div class="suggestions" v-if="query.length > 0">
+      <input v-model="query" @input="fetchSuggestions" placeholder="Search..." :readonly="loading"/>
+      <div class="suggestions" v-if="query.length >= 3">
         <div v-if="loading" class="loading">
           <v-progress-circular
           class="loading-circle"
