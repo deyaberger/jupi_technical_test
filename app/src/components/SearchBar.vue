@@ -4,12 +4,20 @@ import { useRouter } from 'vue-router'
 
 const query = ref('')
 const suggestions = ref([])
+const loading = ref(false)
 
 const fetchSuggestions = async () => {
   if (query.value.length > 0) {
-    const response = await fetch(`http://localhost:8000/suggestions/?query=${query.value}`)
-    const data = await response.json()
-    suggestions.value = data.suggestions
+    loading.value = true
+    try {
+      const response = await fetch(`http://localhost:8000/suggestions/?query=${query.value}`)
+      const data = await response.json()
+      suggestions.value = data.suggestions
+    } catch (error) {
+      console.error('Error fetching suggestions:', error)
+    } finally {
+      loading.value = false // Stop loading
+    }
   } else {
     suggestions.value = []
   }
@@ -31,11 +39,22 @@ const goToSuggestionPage = (suggestion) => {
     <div>
       <div class="search-container">
       <input v-model="query" @input="fetchSuggestions" placeholder="Search..."/>
-      <div class="suggestions" v-if="suggestions.length">
-      <div v-for="suggestion in suggestions" :key="suggestion" class="suggestion-item"
-      @click="goToSuggestionPage(suggestion)">
-        <p>{{ suggestion }}</p>
-      </div>
+      <div class="suggestions" v-if="query.length > 0">
+        <div v-if="loading" class="loading">
+          <v-progress-circular
+          class="loading-circle"
+          indeterminate
+          color="primary"
+          size="32"
+          :rotate="360"
+        ></v-progress-circular>
+        </div>
+        <div v-else>
+          <div v-for="suggestion in suggestions" :key="suggestion" class="suggestion-item"
+            @click="goToSuggestionPage(suggestion)">
+              <p>{{ suggestion }}</p>
+            </div>
+        </div>
     </div>
     </div>
     </div>
@@ -83,6 +102,12 @@ input {
   box-sizing: border-box;
   outline: none;
 }
+
+.loading-circle {
+  margin: 5px 5px;
+  animation-duration: 3s;
+}
+
 
 .suggestions {
   position: absolute;
