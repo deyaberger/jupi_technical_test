@@ -12,9 +12,11 @@ from llama_index.core import SimpleDirectoryReader
 from llama_index.core import PromptTemplate
 import json
 from json import JSONDecodeError
+import os
+from pathlib import Path
 
 class MySuperCoolLLM():
-    data_path = "data.xlsx"
+    data_path = (Path(__file__).parent / "data.xlsx").as_posix()
     model_name = "llama3.1"
     model_temperature = 0.9
     request_timeout = 180.0
@@ -27,7 +29,8 @@ class MySuperCoolLLM():
         base_index = SummaryIndex.from_documents(documents)
 
         Settings.llm = Ollama(
-            model=self.model_name, request_timeout=self.request_timeout, temperature=self.model_temperature)
+            model=self.model_name, request_timeout=self.request_timeout, temperature=self.model_temperature,
+            base_url=os.environ.get("OLLAMA_BASE_PATH"))
 
 
         self.base_query_engine = base_index.as_query_engine(text_qa_template=self.autocomplete_template)
@@ -53,9 +56,6 @@ class MySuperCoolLLM():
     def get_suggestions(self, user_input):
         response = self.base_query_engine.query(user_input)
         try:
-            if len(json.loads(response.response)) == 0:
-                breakpoint()
             return json.loads(response.response)
         except JSONDecodeError:
-            breakpoint()
             return []

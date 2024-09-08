@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from autocomplete import MySuperCoolLLM
+from src.autocomplete import MySuperCoolLLM
 
 app = FastAPI()
 
