@@ -11,7 +11,7 @@ echo -e "${GREEN}Building backend API...${NC}"
 cd api
 docker build -t backend .
 
-echo -e "${GREEN}Building frontend app...${NC}"
+echo -e "${GREEN}Building frontend APP...${NC}"
 cd ../app
 docker build -t frontend .
 
@@ -19,5 +19,8 @@ docker build -t frontend .
 echo -e "${GREEN}Starting Docker containers...${NC}"
 cd ..
 docker compose up -d
+
+echo -e "${GREEN}Launching ollama container to pull our model ...${NC}"
+docker exec -it ollama ollama pull llama3.1
 
 echo -e "${GREEN}All done!${NC}"

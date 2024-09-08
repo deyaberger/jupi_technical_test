@@ -7,7 +7,6 @@ services:
     container_name: ollama
     volumes:
       - /usr/share/ollama/.ollama:/root/.ollama
-    restart: unless-stopped
     networks:
       - jupi
     deploy:
